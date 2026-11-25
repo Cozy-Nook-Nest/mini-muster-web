@@ -96,6 +96,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .pthumb span{font:600 11px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px}
 .pctl{display:grid;gap:4px;min-width:0}
 .note a{color:var(--accent);font-weight:700}
+.promo{display:grid;gap:8px;margin-top:4px;padding:12px 14px;border:1px solid var(--accent);border-radius:10px;background:var(--bg)}
+.promo b{font:700 17px/1.1 var(--display);text-transform:uppercase;letter-spacing:.5px}
+.promo .btn{justify-self:start;text-decoration:none}
 .pctl label.btn{display:inline-flex;align-items:center;font:700 15px var(--body);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer}
 .plbl{font:600 13px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .viewer{position:fixed;z-index:21;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,520px);background:var(--bg);border-radius:14px;padding:12px;display:grid;gap:10px}
@@ -226,7 +229,7 @@ label input,label select,label textarea{width:100%;min-width:0;max-width:100%;fo
 <div class="wrap">
   <header>
     <div class="brand"><h1>Mini Muster</h1><span class="count" id="count"></span>
-      <button class="gear" type="button" id="openSettings" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.4h-4L10.7 6a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4L4.6 11a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.3 2.6h4l.3-2.6c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button></div>
+      <button class="gear" type="button" id="openSettings" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M9.97 4.68 L10.02 1.79 L13.98 1.79 L14.03 4.68 A7.6 7.6 0 0 1 15.74 5.39 L17.82 3.38 L20.62 6.18 L18.61 8.26 A7.6 7.6 0 0 1 19.32 9.97 L22.21 10.02 L22.21 13.98 L19.32 14.03 A7.6 7.6 0 0 1 18.61 15.74 L20.62 17.82 L17.82 20.62 L15.74 18.61 A7.6 7.6 0 0 1 14.03 19.32 L13.98 22.21 L10.02 22.21 L9.97 19.32 A7.6 7.6 0 0 1 8.26 18.61 L6.18 20.62 L3.38 17.82 L5.39 15.74 A7.6 7.6 0 0 1 4.68 14.03 L1.79 13.98 L1.79 10.02 L4.68 9.97 A7.6 7.6 0 0 1 5.39 8.26 L3.38 6.18 L6.18 3.38 L8.26 5.39 A7.6 7.6 0 0 1 9.97 4.68ZM15.2 12A3.2 3.2 0 1 0 8.8 12A3.2 3.2 0 1 0 15.2 12Z"/></svg></button></div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-shelf" aria-selected="true">Shelf</button>
       <button role="tab" id="tab-enc" aria-selected="false">Encounter</button>
@@ -964,6 +967,12 @@ function drawCountPicks(){
   $("s-counts").innerHTML=[["total","Total",countTotal],["ready","Ready",countReady]].map(([key,label,val])=>`
     <div class="countrow"><span>${label}</span><div class="${cls}" data-count="${key}">${opts.map(([k,v])=>`<button type="button" data-v="${k}" aria-pressed="${k===effStage(val)}">${v}</button>`).join("")}</div></div>`).join("");
 }
+/* Kickstarter promo card (Settings → About only). Off until PROMO_FROM on the device's own clock.
+   Nothing is fetched: the app never goes online. The button just opens the sign-up page in the browser.
+   Set both values in the release build that should carry the promo, e.g. PROMO_FROM=new Date(2027,0,15). */
+const PROMO_FROM=null;
+const PROMO_URL="";
+const promoOn=()=>!!(PROMO_FROM&&PROMO_URL&&Date.now()>=PROMO_FROM.getTime());
 function openSettings(){
   const fileTotal=minis.reduce((a,m)=>a+m.counts.file,0);
   sheetShell("Settings",`
@@ -986,6 +995,11 @@ function openSettings(){
       <b>About</b>
       <small class="note" style="margin:-4px 0 0">Mini Muster by Cozy Nook Nest. Free, no accounts, no ads, and nothing leaves your device.
         <a href="https://cozy-nook-nest.github.io/mini-muster-web/privacy.html" target="_blank" rel="noopener">Privacy policy</a></small>
+      ${promoOn()?`<div class="promo">
+        <b>From the makers of Mini Muster</b>
+        <span>Our modular tabletop storage box launches on Kickstarter on March 1, 2027. Sign up and we'll email you when it goes live.</span>
+        <a class="btn primary" href="${esc(PROMO_URL)}" target="_blank" rel="noopener">Get launch updates</a>
+        <small class="note" style="margin:0">Opens in your browser. Mini Muster stays free and offline.</small></div>`:""}
     </section>
     <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="s-done">Done</button></div>`);
   drawCountPicks();
