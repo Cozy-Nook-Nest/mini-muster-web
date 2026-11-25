@@ -586,7 +586,7 @@ function openSheet(m,pre){
       </div>
     </div>
     <label for="f-name">Name<input id="f-name" required value="${esc(m.name)}" placeholder="Goblin archer"></label>
-    <p class="note" style="margin:-6px 0 0">Tip: paste a monster's stat block from D&amp;D Beyond to fill in size, type and CR.</p>
+    <p class="note" style="margin:-6px 0 0">Tip: paste a monster's stat block to fill in size, type and CR.</p>
     <div class="grid2">
       <label for="f-type">Creature type<select id="f-type"><option value="">Not set</option>${TYPES.map(t=>`<option value="${t}" ${t===m.type?"selected":""}>${cap(t)}</option>`).join("")}</select></label>
       <label for="f-cr">Challenge rating<select id="f-cr"><option value="">Not set</option>${CRS.map(c=>`<option value="${c}" ${c===m.cr?"selected":""}>CR ${c}</option>`).join("")}</select></label>
@@ -874,7 +874,7 @@ function openEncSheet(e){
     <h2 style="margin:0">${isNew?"New encounter":"Edit encounter"}</h2>
     <label for="e-name">Encounter name<input id="e-name" required value="${esc(e.name)}" placeholder="Ambush at the old bridge"></label>
     <label for="e-lines">Creatures, one per line<textarea id="e-lines" placeholder="4 goblin&#10;1 ogre&#10;2 wolf">${esc(e.lines)}</textarea></label>
-    <p class="note" style="margin:-6px 0 0">Tip: paste a monster list from a D&amp;D Beyond encounter, or a single stat block (counts as 1), and it converts automatically with CR and creature type.</p>
+    <p class="note" style="margin:-6px 0 0">Tip: paste a monster list from an online encounter builder, or a single stat block (counts as 1), and it converts automatically with CR and creature type.</p>
     <label for="e-notes">Notes<textarea id="e-notes" rows="3" style="min-height:72px" placeholder="Session 6, ogre arrives on round 3">${esc(e.notes||"")}</textarea></label>
     <label for="e-camp">Campaign<select id="e-camp">
       <option value="">No campaign</option>
@@ -894,7 +894,7 @@ function openEncSheet(e){
   let meta={...(e.meta||{})};
   $("e-lines").addEventListener("paste",ev=>{const t=ev.clipboardData?.getData("text");const r=parseEncounterPaste(t);if(!r)return;ev.preventDefault();
     const box=$("e-lines");box.value=mergeLines(box.value,r.lines);Object.assign(meta,r.meta);
-    toast(r.stat?`Added 1 ${r.name} from its stat block`:`Imported ${r.count} monster type${r.count===1?"":"s"} from D&D Beyond`)});
+    toast(r.stat?`Added 1 ${r.name} from its stat block`:`Imported ${r.count} monster type${r.count===1?"":"s"}`)});
   $("e-cancel").onclick=closeSheet;
   if($("e-manage"))$("e-manage").onclick=()=>openCampSheet();
   if(!isNew){$("e-del").onclick=()=>$("e-confirm").hidden=false;$("e-del2").onclick=()=>{removeEnc(e.id);closeSheet();toast("Encounter deleted")}}
